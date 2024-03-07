@@ -1,11 +1,11 @@
 Problems:
-* Metadata
+* Metadata: how and what metadata to generate
 
 
 * If chunks with the same content are recognised
 
 * Pinecone 
 
-* Text Splitter
+* Text Splitter: what is it needed for? how big should each chunk of text be?
 
-* Chat
+* Chat: do we implement it or not?

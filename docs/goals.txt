@@ -12,3 +12,4 @@ Goals:
 
 Maybe: 
 * Images
+* send to **email** the documents about **topic**
