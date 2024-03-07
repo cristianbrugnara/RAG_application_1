@@ -4,6 +4,15 @@ from langchain_pinecone import Pinecone as LcPinecone
 from langchain.schema import (SystemMessage, HumanMessage, AIMessage)
 from langchain.chat_models import ChatOpenAI
 import os
+from pinecone import Pinecone
+from resources.playground_secret_key import PINECONE_KEY,SECRET_KEY
+
+os.environ['PINECONE_API_KEY'] = PINECONE_KEY
+environment = os.environ.get('PINECONE_ENVIRONMENT')
+
+os.environ['OPENAI_API_KEY'] = SECRET_KEY
+
+
 
 
 class MainModel:
@@ -59,7 +68,7 @@ class MainModel:
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
         prompt = HumanMessage(
-            content=cls.__augment_prompt(user_query)
+            content=cls.__augment_prompt(user_query,1)
         )
         return cls.__chat_model(prompt)
 
