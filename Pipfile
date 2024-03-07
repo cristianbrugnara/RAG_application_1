@@ -7,8 +7,11 @@ name = "pypi"
 openai = "*"
 langchain = "*"
 langchain-pinecone = "*"
+langchain-openai = "*"
 pinecone-client = "==3.0.0"
 langchain-experimental = "*"
+jupyter = "*"
+unstructured = {extras = ["pdf"], version = "*"}
 
 [dev-packages]
 
