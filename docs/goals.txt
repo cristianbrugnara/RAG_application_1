@@ -1,0 +1,14 @@
+Goals:
+* Interface that allows to ask queries and receive answers.
+
+* Document searcher
+
+* Prompt Rag with another LLM
+
+* Add and delete files
+
+* Deployment
+
+
+Maybe: 
+* Images

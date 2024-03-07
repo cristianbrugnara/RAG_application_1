@@ -1,0 +1,11 @@
+Problems:
+* Metadata
+
+
+* If chunks with the same content are recognised
+
+* Pinecone 
+
+* Text Splitter
+
+* Chat
