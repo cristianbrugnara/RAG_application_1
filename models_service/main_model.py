@@ -1,6 +1,6 @@
 from pinecone import Pinecone
 from langchain_openai.embeddings import OpenAIEmbeddings
-from langchain_pinecone import Pinecone as LcPinecone
+from langchain_pinecone import PineconeVectorStore as LcPinecone
 from langchain.schema import (SystemMessage, HumanMessage, AIMessage)
 from langchain.chat_models import ChatOpenAI
 import os
@@ -15,7 +15,7 @@ os.environ['OPENAI_API_KEY'] = SECRET_KEY
 class MainModel:
     __index = Pinecone().Index('rag')
     __embed_model = OpenAIEmbeddings(model='text-embedding-ada-002')
-    __vector_store = LcPinecone(__index, __embed_model)
+    __vector_store = LcPinecone.from_existing_index('rag', __embed_model)
     __chat_model = ChatOpenAI(openai_api_key=os.environ['OPENAI_API_KEY'], model='gpt-3.5-turbo')
 
     """Class to encapsulate the Rag pipeline. 
@@ -46,14 +46,14 @@ class MainModel:
         return augmented_prompt
 
     @classmethod
-    def __similarity_search(cls, query: str, k: int):
+    def __similarity_search(cls, query: str, k: int, namespace='ns1'):
         """
 
         :param query: query inserted from the user
         :param k: number of documents retrieved from the similarity search
         :return: source knowledge from the vectorstore database that relates to the user query
         """
-        results = cls.__vector_store.similarity_search(query, k=k)
+        results = cls.__vector_store.similarity_search(query=query, namespace=namespace,k=k)
         source_knowledge = '\n'.join([x.page_content for x in results])
         return source_knowledge
 
@@ -64,10 +64,10 @@ class MainModel:
         :param user_query: query inserted by the user
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
-        prompt = HumanMessage(
-            content=cls.__augment_prompt(user_query,2)
-        )
-        return cls.__chat_model(prompt)
+        prompt = [HumanMessage(
+            content=cls.__augment_prompt(user_query,1)
+        )]
+        return cls.__chat_model.invoke(prompt).content
 
     @classmethod
     def populate_index(cls):
@@ -82,4 +82,4 @@ class MainModel:
         pass
 
 
-MainModel.query('According to Michela Papandrea, what are the main steps of M.L. analysis')
+print(MainModel.query('According to Michela Papandrea, what are the main steps of M.L. analysis'))
