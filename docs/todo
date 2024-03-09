@@ -1,0 +1,14 @@
+* TEXT SPLITTER:
+
+    - Test the different chunk sizes --> test with: {chunksize = 1024, overlap 128}
+
+
+* PROMPT ENGENEERING:
+    - Add system prompt
+    - Try double step query
+    - Search the prompt syntax
+    - Look for classes and methods
+
+* METADATA:
+    - Fix 'generate_metadata'
+    - Implement self query of the vectorstore

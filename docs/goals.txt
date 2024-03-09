@@ -1,5 +1,5 @@
-Goals:
-* Interface that allows to ask queries and receive answers.
+*GOALS:
+1 Interface that allows to ask queries and receive answers.
 
 * Document searcher
 
@@ -10,6 +10,6 @@ Goals:
 * Deployment
 
 
-Maybe: 
+*MAYBE:
 * Images
 * send to **email** the documents about **topic**

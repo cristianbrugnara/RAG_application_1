@@ -1,0 +1,15 @@
+* METADATA:
+    -
+
+
+
+* PROMPT ENGENEERING:
+    -
+
+
+* PINECONE:
+    - after a certain document number similarity search doesn't work: https://github.com/langchain-ai/langchain/issues/2442
+
+
+* EMBEDDING:
+    - new openai embedding models: https://platform.openai.com/docs/guides/embeddings/use-cases
