@@ -17,3 +17,5 @@ Problems:
 * Text Splitter: what is it needed for? how big should each chunk of text be?
 
 * Chat: do we implement it or not?
+
+* Separate indexing class

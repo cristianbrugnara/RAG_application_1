@@ -65,7 +65,7 @@ class MainModel:
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
         prompt = [HumanMessage(
-            content=cls.__augment_prompt(user_query,1)
+            content=cls.__augment_prompt(user_query, 1)
         )]
         return cls.__chat_model.invoke(prompt).content
 
