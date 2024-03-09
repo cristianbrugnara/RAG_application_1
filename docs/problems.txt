@@ -1,7 +1,12 @@
 Problems:
-* Metadata: how and what metadata to generate -->
+* Metadata:
+
+    * How and what metadata to generate -->
         - library for metadata generation: https://docs.llamaindex.ai/en/stable/examples/metadata_extraction/MetadataExtractionSEC.html
         - embed text in parallel (takes 1/10 of the time): https://www.youtube.com/watch?v=hGnZajytlac
+
+    * How to enable the similarity search to automatically filter the metadata based on user query -->
+        - create self-querying : https://python.langchain.com/docs/modules/data_connection/retrievers/self_query/
 
 
 
