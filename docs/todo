@@ -1,5 +1,4 @@
 * TEXT SPLITTER:
-
     - Test the different chunk sizes --> test with: {chunksize = 1024, overlap 128}
 
 
@@ -12,3 +11,4 @@
 * METADATA:
     - Fix 'generate_metadata'
     - Implement self query of the vectorstore
+    - Implement index class

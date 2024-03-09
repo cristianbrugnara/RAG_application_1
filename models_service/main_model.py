@@ -7,19 +7,8 @@ import os
 from pinecone import Pinecone
 from resources.playground_secret_key import PINECONE_KEY, SECRET_KEY
 from typing import List, Dict
+from index import Index
 
-# llama mettadata stuff
-from llama_index.llms.openai import OpenAI
-from llama_index.core.extractors import (
-    SummaryExtractor,
-    QuestionsAnsweredExtractor,
-    TitleExtractor,
-    KeywordExtractor,
-    BaseExtractor,
-)
-from llama_index.core.node_parser import TokenTextSplitter
-from llama_index.core import SimpleDirectoryReader
-from llama_index.core.ingestion import IngestionPipeline
 
 os.environ['PINECONE_API_KEY'] = PINECONE_KEY
 environment = os.environ.get('PINECONE_ENVIRONMENT')
@@ -27,8 +16,8 @@ os.environ['OPENAI_API_KEY'] = SECRET_KEY
 
 
 class MainModel:
-    __index = Pinecone().Index('rag')
-    __embed_model = OpenAIEmbeddings(model='text-embedding-ada-002')
+    __index = Index
+    __embed_model = Index.get_embed_model
     __vector_store = LcPinecone.from_existing_index('rag', __embed_model)
     __chat_model = ChatOpenAI(openai_api_key=os.environ['OPENAI_API_KEY'], model='gpt-3.5-turbo')
 
@@ -97,33 +86,6 @@ class MainModel:
         pass
 
     # metadata with llamaindex, maybe can be done with langchain
-
-    @classmethod
-    def generate_metadata(cls, filepaths: List[str], title: bool = True, summary: bool = False,
-                          qna: bool = False, keyword: bool = True) -> List[Dict]:
-
-        extractor = OpenAI(temperature=0.1, model="gpt-3.5-turbo", max_tokens=512)
-
-        splitter = TokenTextSplitter(separator=" ", chunk_size=512, chunk_overlap=128)
-
-        transformations = [splitter]
-        if title:
-            transformations.append(TitleExtractor(nodes=5, llm=extractor))
-        if qna:
-            transformations.append(QuestionsAnsweredExtractor(questions=3, llm=extractor))
-        if summary:
-            transformations.append(SummaryExtractor(llm=extractor))
-        if keyword:
-            transformations.append(KeywordExtractor(llm=extractor))
-
-        # obtain file text (probably in a different way)
-        docs = SimpleDirectoryReader(input_files=filepaths).load_data()
-
-        ing_pipeline = IngestionPipeline(transformations=transformations)
-        nodes = ing_pipeline.run(documents=docs)
-
-        result = [node.metadata for node in nodes]
-        return result  # need to decide how/where to get output
 
 
 if __name__ == '__main__':
