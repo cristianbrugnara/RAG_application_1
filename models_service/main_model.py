@@ -9,6 +9,18 @@ from resources.playground_secret_key import PINECONE_KEY, SECRET_KEY
 from typing import List, Dict
 from index import Index
 
+# llama mettadata stuff
+from llama_index.llms.openai import OpenAI
+from llama_index.core.extractors import (
+    SummaryExtractor,
+    QuestionsAnsweredExtractor,
+    TitleExtractor,
+    KeywordExtractor,
+    BaseExtractor,
+)
+from llama_index.core.node_parser import TokenTextSplitter
+from llama_index.core import SimpleDirectoryReader
+from llama_index.core.ingestion import IngestionPipeline
 
 os.environ['PINECONE_API_KEY'] = PINECONE_KEY
 environment = os.environ.get('PINECONE_ENVIRONMENT')
@@ -17,7 +29,7 @@ os.environ['OPENAI_API_KEY'] = SECRET_KEY
 
 class MainModel:
     __index = Index
-    __embed_model = Index.get_embed_model
+    __embed_model = Index.get_embed_model()
     __vector_store = LcPinecone.from_existing_index('rag', __embed_model)
     __chat_model = ChatOpenAI(openai_api_key=os.environ['OPENAI_API_KEY'], model='gpt-3.5-turbo')
 
@@ -89,6 +101,6 @@ class MainModel:
 
 
 if __name__ == '__main__':
-    # print(MainModel.query('According to Michela Papandrea, what are the main steps of M.L. analysis'))
+    print(MainModel.query('According to Michela Papandrea, what are the main steps of M.L. analysis'))
     # print(MainModel.generate_metadata(['../data/01_introduction_to_SL-4.pdf'])[0])
     pass
