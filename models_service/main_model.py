@@ -2,22 +2,22 @@ from pinecone import Pinecone
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore as LcPinecone
 from langchain.schema import (SystemMessage, HumanMessage, AIMessage)
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 import os
 from pinecone import Pinecone
-from resources.playground_secret_key import PINECONE_KEY, SECRET_KEY
+from resources.playground_secret_key import PINECONE_KEY_2, SECRET_KEY
 from typing import List, Dict
 from index import Index
 
 
-os.environ['PINECONE_API_KEY'] = PINECONE_KEY
+os.environ['PINECONE_API_KEY'] = PINECONE_KEY_2
 environment = os.environ.get('PINECONE_ENVIRONMENT')
 os.environ['OPENAI_API_KEY'] = SECRET_KEY
 
 
 class MainModel:
     __index = Index
-    __embed_model = Index.get_embed_model
+    __embed_model = Index.get_embed_model()
     __vector_store = LcPinecone.from_existing_index('rag', __embed_model)
     __chat_model = ChatOpenAI(openai_api_key=os.environ['OPENAI_API_KEY'], model='gpt-3.5-turbo')
 
@@ -58,7 +58,7 @@ class MainModel:
         :return: source knowledge from the vectorstore database that relates to the user query
         """
         results = cls.__vector_store.similarity_search(query=query, namespace=namespace, k=k)
-        source_knowledge = '\n'.join([x.page_content for x in results])
+        source_knowledge = '\n'.join([f"Content:{x.page_content}\n Metadata: {x.metadata}" for x in results])
         return source_knowledge
 
     @classmethod
@@ -68,9 +68,20 @@ class MainModel:
         :param user_query: query inserted by the user
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
-        prompt = [HumanMessage(
-            content=cls.__augment_prompt(user_query, 1)
-        )]
+
+        system_prompt = SystemMessage("""
+        You are an helpful assistant that answers questions on machine learning and supervised learning.
+        You only use the provided context, don't use prior knowledge. If you don't know the answer, don't try to make it up.
+        Whenever you answer a question provide a reference to the context, such as the file name, the page or any specific section.
+        If you have to list something or define steps, use bullet points.
+        Take some time to make the answer very clear and detailed.
+        """)
+
+        user_prompt = HumanMessage(
+            content=cls.__augment_prompt(user_query, k=5))
+
+        prompt = [system_prompt, user_prompt]
+
         return cls.__chat_model.invoke(prompt).content
 
     @classmethod
@@ -89,6 +100,5 @@ class MainModel:
 
 
 if __name__ == '__main__':
-    # print(MainModel.query('According to Michela Papandrea, what are the main steps of M.L. analysis'))
-    # print(MainModel.generate_metadata(['../data/01_introduction_to_SL-4.pdf'])[0])
+    print(MainModel.query('What are the steps of gradient descent?'))
     pass
