@@ -1,14 +1,20 @@
+/ : partially implemented
+// : completed, to be removed.
+
 * TEXT SPLITTER:
     - Test the different chunk sizes --> test with: {chunksize = 1024, overlap 128}
 
 
 * PROMPT ENGENEERING:
-    - Add system prompt
+    - Add system prompt /
     - Try double step query
     - Search the prompt syntax
     - Look for classes and methods
 
 * METADATA:
-    - Fix 'generate_metadata'
+    - Fix 'generate_metadata': add docstring, check the node relationships. (each node has .relationships which could be useful) /
     - Implement self query of the vectorstore
-    - Implement index class
+    - Implement index class /
+
+* GENERAL:
+    - Check time taken by queries. Invoke step takes a while.

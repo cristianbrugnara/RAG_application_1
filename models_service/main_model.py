@@ -8,6 +8,7 @@ from pinecone import Pinecone
 from resources.playground_secret_key import PINECONE_KEY_2, SECRET_KEY
 from typing import List, Dict
 from index import Index
+from timeit import default_timer
 
 
 os.environ['PINECONE_API_KEY'] = PINECONE_KEY_2
@@ -43,8 +44,10 @@ class MainModel:
             f"""Using the context below, answer the query. 
 
         Contexts: 
+        ###
         {source_knowledge} 
-
+        ###
+        
         Query: 
         {query}"""
         return augmented_prompt
@@ -57,7 +60,10 @@ class MainModel:
         :param k: number of documents retrieved from the similarity search
         :return: source knowledge from the vectorstore database that relates to the user query
         """
+        start = default_timer()
         results = cls.__vector_store.similarity_search(query=query, namespace=namespace, k=k)
+        end = default_timer()
+        print(f"Similarity search: {end-start} s")
         source_knowledge = '\n'.join([f"Content:{x.page_content}\n Metadata: {x.metadata}" for x in results])
         return source_knowledge
 
@@ -71,18 +77,23 @@ class MainModel:
 
         system_prompt = SystemMessage("""
         You are an helpful assistant that answers questions on machine learning and supervised learning.
-        You only use the provided context, don't use prior knowledge. If you don't know the answer, don't try to make it up.
-        Whenever you answer a question provide a reference to the context, such as the file name, the page or any specific section.
+        You only use the provided context, never use prior knowledge. If you don't know the answer, don't try to make it up.
+        Whenever you answer a question, always provide a reference to the context, such as the file name, the page or any specific section.
         If you have to list something or define steps, use bullet points.
         Take some time to make the answer very clear and detailed.
         """)
 
         user_prompt = HumanMessage(
-            content=cls.__augment_prompt(user_query, k=5))
+            content=cls.__augment_prompt(user_query, k=3))
 
         prompt = [system_prompt, user_prompt]
-
-        return cls.__chat_model.invoke(prompt).content
+        print(prompt)
+        start = default_timer()
+        res = cls.__chat_model.invoke(prompt).content
+        end = default_timer()
+        print(f"Invoke: {end-start} s")
+        print()
+        return res
 
     @classmethod
     def populate_index(cls):
@@ -100,5 +111,5 @@ class MainModel:
 
 
 if __name__ == '__main__':
-    print(MainModel.query('What are the steps of gradient descent?'))
+    MainModel.query('What are the metrics we can use to evaluate a model?')
     pass
