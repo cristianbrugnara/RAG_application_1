@@ -13,10 +13,10 @@ pinecone-client = "==3.0.0"
 langchain-experimental = "*"
 jupyter = "*"
 unstructured = {extras = ["pdf"], version = "*"}
-
 llama-index-llms-openai="*"
 llama-index-extractors-entity="*"
 llama-index="*"
+docx2txt = "*"
 
 [dev-packages]
 

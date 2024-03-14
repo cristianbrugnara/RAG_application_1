@@ -19,7 +19,7 @@ os.environ['OPENAI_API_KEY'] = SECRET_KEY
 class Index:
 
     __index = Pinecone().Index('rag')
-    __embed_model = OpenAIEmbeddings(model='text-embedding-3-small', dimensions=512)
+    __embed_model = OpenAIEmbeddings(model='text-embedding-3-large', dimensions=256)
 
     @classmethod
     def get_embed_model(cls) -> OpenAIEmbeddings:
@@ -93,7 +93,7 @@ class Index:
         return size
 
     @classmethod
-    def populate(cls, filepaths: List[str] = None, directory : str = None, keyword: bool = True, qna : bool = False):
+    def populate(cls, filepaths: List[str] = None, directory : str = None, keyword: bool = True, qna : bool = False, metadata : bool = True):
         """
         Used to populate the vector index with chunks of text and their metadata.
         A mechanism is used to check if the total vectors to upsert would exceed the 2MB allowed by Pinecone for a
@@ -107,11 +107,14 @@ class Index:
         """
 
         if directory is not None:
-            docs = SimpleDirectoryReader(input_dir=directory).load_data()
+            docs = SimpleDirectoryReader(input_dir=directory, recursive=True).load_data()
+            print('extracted docs with SimpleDirectoryReader')
         else:
             docs = SimpleDirectoryReader(input_files=filepaths).load_data()
 
+        print('calling __generate_metadata method')
         metadata, texts, ids = cls.__generate_metadata(docs,keyword,qna)
+        print('created metadata')
 
         for j in range(len(metadata)):
             metadata[j]['text'] = texts[j]
@@ -156,7 +159,7 @@ class Index:
 
 
 if __name__ == '__main__':
-    # print(Index.populate(directory='../data/Annotated Handouts-20240310/full_chapters_annotated'))
-    Index.remove_file('2023-11-02')
+    print(Index.populate(directory='../data/00_materiale_di_partenza', keyword=False))
+    # Index.remove_file('2023-11-02')
 
 
