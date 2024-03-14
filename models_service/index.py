@@ -19,7 +19,7 @@ os.environ['OPENAI_API_KEY'] = SECRET_KEY
 class Index:
 
     __index = Pinecone().Index('rag')
-    __embed_model = OpenAIEmbeddings(model = 'text-embedding-3-small',dimensions=512)
+    __embed_model = OpenAIEmbeddings(model='text-embedding-3-small', dimensions=512)
 
     @classmethod
     def get_embed_model(cls) -> OpenAIEmbeddings:

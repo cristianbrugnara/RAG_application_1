@@ -34,9 +34,19 @@ class MainModel:
     __system_prompt = SystemMessage("""
         You are an helpful assistant that answers questions on machine learning and supervised learning.
         You only use the provided context, never use prior knowledge. If you don't know the answer, don't try to make it up.
-        Whenever you answer a question, always provide a reference to the context, such as the file name, the page or any specific section.
-        If you have to list something or define steps, use bullet points.
+        Whenever you answer a question, always provide a reference to the context, such as the file name, the page or any specific section in the format:
+        <context_format> 
+        {'file_name': 'context_document_file_name', 'file_path': 'context_document_file_path', 'page' : 'context_document_file_page' }
+        </context_format> 
+        and append this information to the end of your answer.
+        If possible answer questions in a schematic way, making use of lists and bulletpoints.
         Take some time to make the answer very clear and detailed.
+        <Important remarks>
+        1) Be aware that if you add non relevant information the answer will not be accepted and you will not be paid
+        2) It is crucial that your answers are based exclusively on the context given
+        3) It is crucial that you do not answer a question unless you are 100% sure of the answer you are giving.       
+        </Important remarks>
+
         """)
 
     @classmethod
@@ -51,13 +61,15 @@ class MainModel:
         augmented_prompt = \
             f"""Using the context below, answer the query. 
 
-        Contexts: 
-        ###
+        <context>
         {source_knowledge} 
-        ###
+        </context>
+
+        <query>
+        {query}
+        </query>
         
-        Query: 
-        {query}"""
+        """
         return augmented_prompt
 
     @classmethod
@@ -116,23 +128,32 @@ class MainModel:
         :return: return the model's response informed by the knowledge base retrieved from the index, the user_query and a previews answer.
         """
 
-        answer,prompt = cls.query(user_query, return_prompt = True)
+        answer,prompt = cls.query(user_query, return_prompt=True)
 
         new_user_prompt = HumanMessage(f"""
-        The original query is the following:
-        ###{prompt}###
         
+        Given the following query:
+        
+        <query>
+        {prompt}
+        </query>
         
         We provided the following answer:
-        ###{answer}###
+        <answer>
+        {answer}
+        </answer>
         
         
         You have the opportunity to improve the answer using the following context:
-        ###{cls.__similarity_search(user_query, k=5)}###
+        <context>
+        {cls.__similarity_search(user_query, k=5)}
+        </context>
         
         
         If you don't believe the answer needs refinement return the original answer.
+        Be aware that if you add non relevant information the answer will not be accepted and you will not be paid
         Do not mention that you refined or not the answer.
+        
         """)
 
         prompt = [cls.__system_prompt, new_user_prompt]
