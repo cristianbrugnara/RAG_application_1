@@ -31,6 +31,14 @@ class MainModel:
     __vector_store = LcPinecone.from_existing_index('rag', __embed_model)
     __chat_model = ChatOpenAI(openai_api_key=os.environ['OPENAI_API_KEY'], model='gpt-3.5-turbo')
 
+    __system_prompt = SystemMessage("""
+        You are an helpful assistant that answers questions on machine learning and supervised learning.
+        You only use the provided context, never use prior knowledge. If you don't know the answer, don't try to make it up.
+        Whenever you answer a question, always provide a reference to the context, such as the file name, the page or any specific section.
+        If you have to list something or define steps, use bullet points.
+        Take some time to make the answer very clear and detailed.
+        """)
+
     @classmethod
     def __augment_prompt(cls, query: str, k: int):
         """Takes as input a user query and concatenate it with inherent documents taken from the vectorstore database, based on similarity
@@ -68,31 +76,71 @@ class MainModel:
         return source_knowledge
 
     @classmethod
-    def query(cls, user_query : str):
+    def query(cls, user_query : str, return_prompt : bool = False):
         """
+        Asks the model to generate an answer for the user query.
 
         :param user_query: query inserted by the user
+        :param return_prompt: helper parameter. Specifies if the function should return a tuple with the result of the
+        query and the augmented prompt, instead of just the former.
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
 
-        system_prompt = SystemMessage("""
-        You are an helpful assistant that answers questions on machine learning and supervised learning.
-        You only use the provided context, never use prior knowledge. If you don't know the answer, don't try to make it up.
-        Whenever you answer a question, always provide a reference to the context, such as the file name, the page or any specific section.
-        If you have to list something or define steps, use bullet points.
-        Take some time to make the answer very clear and detailed.
-        """)
-
+        print('entered in query')
+        print()
         user_prompt = HumanMessage(
-            content=cls.__augment_prompt(user_query, k=3))
+            content=cls.__augment_prompt(user_query, k=1))
 
-        prompt = [system_prompt, user_prompt]
-        print(prompt)
+        prompt = [cls.__system_prompt, user_prompt]
+
         start = default_timer()
         res = cls.__chat_model.invoke(prompt).content
         end = default_timer()
+
         print(f"Invoke: {end-start} s")
         print()
+
+        if return_prompt:
+            return res, user_prompt.content
+        return res
+
+    @classmethod
+    def double_step_query(cls, user_query : str, return_prompt : bool = False):
+        """
+        Asks the model to generate an answer for the user query.
+        Feeds the query back in and asks the model to refine it.
+
+        :param user_query: query inserted by the user
+        :param return_prompt: helper parameter. Specifies if the function should return a tuple with the result of the
+        query and the augmented prompt, instead of just the former.
+        :return: return the model's response informed by the knowledge base retrieved from the index, the user_query and a previews answer.
+        """
+
+        answer,prompt = cls.query(user_query, return_prompt = True)
+
+        new_user_prompt = HumanMessage(f"""
+        The original query is the following:
+        ###{prompt}###
+        
+        
+        We provided the following answer:
+        ###{answer}###
+        
+        
+        You have the opportunity to improve the answer using the following context:
+        ###{cls.__similarity_search(user_query, k=5)}###
+        
+        
+        If you don't believe the answer needs refinement return the original answer.
+        Do not mention that you refined or not the answer.
+        """)
+
+        prompt = [cls.__system_prompt, new_user_prompt]
+        res = cls.__chat_model.invoke(prompt).content
+
+        if return_prompt:
+            return res, new_user_prompt.content
+
         return res
 
     @classmethod
@@ -111,5 +159,6 @@ class MainModel:
 
 
 if __name__ == '__main__':
-    MainModel.query('What are the metrics we can use to evaluate a model?')
-    pass
+    print(MainModel.double_step_query('What is gradient descent?'))
+    # print(MainModel.query('What is gradient descent?'))
+

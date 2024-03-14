@@ -7,12 +7,16 @@
 
 * PROMPT ENGENEERING:
     - Add system prompt /
-    - Try double step query
+    - Add double step query /
 
 * METADATA:
     - Fix 'generate_metadata': add docstring, check the node relationships. (each node has .relationships which could be useful) /
     - Implement self query of the vectorstore
     - Implement index class /
+
+* EVALUATION:
+    - Make QNA file.
+    - Evaluate model: compare single/double step queries, chunk sizes, embeddings.
 
 * GENERAL:
     - Check time taken by queries. Invoke step takes a while.
