@@ -10,6 +10,7 @@ from llama_index.core.node_parser import TokenTextSplitter
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core.ingestion import IngestionPipeline
 
+
 os.environ['PINECONE_API_KEY'] = PINECONE_KEY_2
 environment = os.environ.get('PINECONE_ENVIRONMENT')
 os.environ['OPENAI_API_KEY'] = SECRET_KEY
@@ -22,7 +23,6 @@ class Index:
 
     @classmethod
     def get_embed_model(cls) -> OpenAIEmbeddings:
-
         return cls.__embed_model
 
     @classmethod
@@ -101,6 +101,8 @@ class Index:
 
         :param filepaths: List of filepaths to target specific files.
         :param directory: Single directory to recursively target all of the files. (!!! CHECK IF THIS ACTUALLY WORKS !!!)
+        :param keyword: Used to decide if the metadata generator will create keywords for the chunks.
+        :param qna: Used to decide if the metadata generator will create question and answer pairs for the chunks.
         :return: None
         """
 
@@ -139,16 +141,22 @@ class Index:
         return
 
     @classmethod
-    def add_file(cls):
+    def add_file(cls, filepath : str):
         pass # TODO
 
     @classmethod
-    def remove_file(cls):
-        pass # TODO
+    def remove_file(cls, filepath : str):
+        pass
+#         cls.__index.delete(namespace='ns1',
+#     filter={
+#         "file_path": {"$eq": filepath}
+#     }
+# )
+        # starter index doesn't allow for delete with metadata :(
 
 
 if __name__ == '__main__':
-    print(Index.populate(directory='../data/Annotated Handouts-20240310/full_chapters_annotated'))
-
+    # print(Index.populate(directory='../data/Annotated Handouts-20240310/full_chapters_annotated'))
+    Index.remove_file('2023-11-02')
 
 

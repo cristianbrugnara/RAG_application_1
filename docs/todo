@@ -8,8 +8,6 @@
 * PROMPT ENGENEERING:
     - Add system prompt /
     - Try double step query
-    - Search the prompt syntax
-    - Look for classes and methods
 
 * METADATA:
     - Fix 'generate_metadata': add docstring, check the node relationships. (each node has .relationships which could be useful) /
