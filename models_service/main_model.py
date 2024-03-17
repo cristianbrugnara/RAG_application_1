@@ -42,9 +42,11 @@ class MainModel:
         If possible answer questions in a schematic way, making use of lists and bulletpoints.
         Take some time to make the answer very clear and detailed.
         <Important remarks>
-        1) Be aware that if you add non relevant information the answer will not be accepted and you will not be paid
-        2) It is crucial that your answers are based exclusively on the context given
-        3) It is crucial that you do not answer a question unless you are 100% sure of the answer you are giving.       
+        1) It is crucial that you answer in Italian at every question
+        2) Be aware that if you add non relevant information the answer will not be accepted and you will not be paid
+        3) It is crucial that your answers are based exclusively on the context given
+        4) It is crucial that you do not answer a question unless you are 100% sure of the answer you are giving.  
+        5) Do not add any formatting in the answer. Just your response to the query.     
         </Important remarks>
 
         """)
@@ -83,7 +85,7 @@ class MainModel:
         start = default_timer()
         results = cls.__vector_store.similarity_search(query=query, namespace=namespace, k=k)
         end = default_timer()
-        print(f"Similarity search: {end-start} s")
+        # print(f"Similarity search: {end-start} s")
         source_knowledge = '\n'.join([f"Content:{x.page_content}\n Metadata: {x.metadata}" for x in results])
         return source_knowledge
 
@@ -98,8 +100,8 @@ class MainModel:
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
 
-        print('entered in query')
-        print()
+        # print('entered in query')
+        # print()
         user_prompt = HumanMessage(
             content=cls.__augment_prompt(user_query, k=1))
 
@@ -109,8 +111,8 @@ class MainModel:
         res = cls.__chat_model.invoke(prompt).content
         end = default_timer()
 
-        print(f"Invoke: {end-start} s")
-        print()
+        # print(f"Invoke: {end-start} s")
+        # print()
 
         if return_prompt:
             return res, user_prompt.content
@@ -180,6 +182,8 @@ class MainModel:
 
 
 if __name__ == '__main__':
-    print(MainModel.double_step_query('What is gradient descent?'))
+    print(MainModel.double_step_query('Quale organo ha espresso un preliminare parere di condivisione generale degli obiettivi e delle finalità del progetto "PNRR - M5C2 - INV. 2.2 Interventi di miglioramento della qualità ambientale del territorio – fascia Laguna Santa Gilla" come risposta alla nota del Comune di Elmas prot. n. 13250 del 20/09/2023?'))
     # print(MainModel.query('What is gradient descent?'))
 
+# - Domanda: Quale organo ha espresso un preliminare parere di condivisione generale degli obiettivi e delle finalità del progetto "PNRR - M5C2 - INV. 2.2 Interventi di miglioramento della qualità ambientale del territorio – fascia Laguna Santa Gilla" come risposta alla nota del Comune di Elmas prot. n. 13250 del 20/09/2023?
+# - Risposta: La Direzione Generale dell'Agenzia Regionale del Distretto Idrografico della Sardegna ha espresso un preliminare parere di condivisione generale degli obiettivi e delle finalità del progetto.

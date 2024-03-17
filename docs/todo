@@ -12,6 +12,7 @@
 * EVALUATION:
     - Make QNA file. /
     - Evaluate model: compare single/double step queries, chunk sizes, embeddings.
+    - Build evalution dataset
     - Test the different chunk sizes --> test with: {chunksize = 1024, overlap 128}
 
 * CSV/Excel:
