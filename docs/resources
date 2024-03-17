@@ -13,3 +13,4 @@
 
 * EMBEDDING:
     - new openai embedding models: https://platform.openai.com/docs/guides/embeddings/use-cases
+    - embed text in parallel (takes 1/10 of the time): https://www.youtube.com/watch?v=hGnZajytlac

@@ -2,7 +2,7 @@ from langchain_openai.embeddings import OpenAIEmbeddings
 import os
 import sys
 from pinecone import Pinecone
-from resources.playground_secret_key import PINECONE_KEY_2, SECRET_KEY
+from resources.playground_secret_key import PINECONE_KEY_2, SECRET_KEY, PINECONE_KEY
 from typing import List
 from llama_index.llms.openai import OpenAI
 from llama_index.core.extractors import KeywordExtractor, QuestionsAnsweredExtractor
@@ -11,7 +11,7 @@ from llama_index.core import SimpleDirectoryReader
 from llama_index.core.ingestion import IngestionPipeline
 
 
-os.environ['PINECONE_API_KEY'] = PINECONE_KEY_2
+os.environ['PINECONE_API_KEY'] = PINECONE_KEY
 environment = os.environ.get('PINECONE_ENVIRONMENT')
 os.environ['OPENAI_API_KEY'] = SECRET_KEY
 
@@ -106,8 +106,10 @@ class Index:
         :return: None
         """
 
+        required_exts = ['.pdf', '.csv', '.xlsx', 'docx']
+
         if directory is not None:
-            docs = SimpleDirectoryReader(input_dir=directory, recursive=True).load_data()
+            docs = SimpleDirectoryReader(input_dir=directory, recursive=True, required_exts=required_exts).load_data()
             print('extracted docs with SimpleDirectoryReader')
         else:
             docs = SimpleDirectoryReader(input_files=filepaths).load_data()

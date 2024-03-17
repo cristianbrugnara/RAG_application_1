@@ -1,22 +1,23 @@
 / : partially implemented
 // : completed, to be removed.
 
-* TEXT SPLITTER:
-    - Test the different chunk sizes --> test with: {chunksize = 1024, overlap 128}
-
-
 * PROMPT ENGENEERING:
     - Add system prompt /
     - Add double step query /
 
 * METADATA:
-    - Fix 'generate_metadata': add docstring, check the node relationships. (each node has .relationships which could be useful) /
-    - Implement self query of the vectorstore
-    - Implement index class /
+    - generate metadata while other docs are read
+    - Implement self query of the vectorstore /
 
 * EVALUATION:
-    - Make QNA file.
+    - Make QNA file. /
     - Evaluate model: compare single/double step queries, chunk sizes, embeddings.
+    - Test the different chunk sizes --> test with: {chunksize = 1024, overlap 128}
+
+* CSV/Excel:
+    - how to read csv files
 
 * GENERAL:
     - Check time taken by queries. Invoke step takes a while.
+
+
