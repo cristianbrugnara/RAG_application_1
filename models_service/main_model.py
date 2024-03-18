@@ -35,9 +35,11 @@ class MainModel:
         You are an helpful assistant that answers questions on machine learning and supervised learning.
         You only use the provided context, never use prior knowledge. If you don't know the answer, don't try to make it up.
         Whenever you answer a question, always provide a reference to the context, such as the file name, the page or any specific section in the format:
+        
         <context_format> 
         {'file_name': 'context_document_file_name', 'file_path': 'context_document_file_path', 'page' : 'context_document_file_page' }
         </context_format> 
+        
         and append this information to the end of your answer.
         If possible answer questions in a schematic way, making use of lists and bulletpoints.
         Take some time to make the answer very clear and detailed.
@@ -103,7 +105,7 @@ class MainModel:
         # print('entered in query')
         # print()
         user_prompt = HumanMessage(
-            content=cls.__augment_prompt(user_query, k=1))
+            content=cls.__augment_prompt(user_query, k=3))
 
         prompt = [cls.__system_prompt, user_prompt]
 
@@ -182,8 +184,10 @@ class MainModel:
 
 
 if __name__ == '__main__':
-    print(MainModel.double_step_query('Quale organo ha espresso un preliminare parere di condivisione generale degli obiettivi e delle finalità del progetto "PNRR - M5C2 - INV. 2.2 Interventi di miglioramento della qualità ambientale del territorio – fascia Laguna Santa Gilla" come risposta alla nota del Comune di Elmas prot. n. 13250 del 20/09/2023?'))
-    # print(MainModel.query('What is gradient descent?'))
+    print(MainModel.query("Qual è l'obiettivo specifico dell'attuazione della Variante al PUC di Elmas per la realizzazione dell'opera 'PNRR - M5C2 - INV. 2.2 Interventi di miglioramento della qualità ambientale del territorio – fascia lagunare Santa Gilla'?"))
 
 # - Domanda: Quale organo ha espresso un preliminare parere di condivisione generale degli obiettivi e delle finalità del progetto "PNRR - M5C2 - INV. 2.2 Interventi di miglioramento della qualità ambientale del territorio – fascia Laguna Santa Gilla" come risposta alla nota del Comune di Elmas prot. n. 13250 del 20/09/2023?
 # - Risposta: La Direzione Generale dell'Agenzia Regionale del Distretto Idrografico della Sardegna ha espresso un preliminare parere di condivisione generale degli obiettivi e delle finalità del progetto.
+
+#- Domanda: Qual è l'obiettivo principale del progetto "GILIACQUAS FUTURA" descritto nello Studio di Compatibilità Idraulica e come viene attuato attraverso le varie parti costruttive?
+#- Risposta ottimale: L'obiettivo principale del progetto "GILIACQUAS FUTURA" è la salvaguardia e valorizzazione dell'ambito lagunare di Santa Gilla nel territorio di Elmas, mirando a un bilanciamento delle necessità di tutela ambientale con le istanze di sviluppo economico. L'intervento prevede la realizzazione di percorsi in calcestruzzo drenante, spazi e viabilità sterrata con conglomerato naturale, piattaforme passerelle e pontili, capanni e chioschi, ombreggi, ponti pedonali, illuminazione, acque, stagni, vegetazione e ripristino di habitat, tutti orientati alla semplicità, modularità, replicabilità, e reversibilità, con un forte dialogo attivo con gli stakeholders.

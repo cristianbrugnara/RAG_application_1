@@ -11,7 +11,7 @@ from llama_index.core import SimpleDirectoryReader
 from llama_index.core.ingestion import IngestionPipeline
 
 
-os.environ['PINECONE_API_KEY'] = PINECONE_KEY
+os.environ['PINECONE_API_KEY'] = PINECONE_KEY_2
 environment = os.environ.get('PINECONE_ENVIRONMENT')
 os.environ['OPENAI_API_KEY'] = SECRET_KEY
 
@@ -19,7 +19,7 @@ os.environ['OPENAI_API_KEY'] = SECRET_KEY
 class Index:
 
     __index = Pinecone().Index('rag')
-    __embed_model = OpenAIEmbeddings(model='text-embedding-3-large', dimensions=256)
+    __embed_model = OpenAIEmbeddings(model='text-embedding-3-large', dimensions=3072)
 
     @classmethod
     def get_embed_model(cls) -> OpenAIEmbeddings:
@@ -162,6 +162,5 @@ class Index:
 
 if __name__ == '__main__':
     print(Index.populate(directory='../data/00_materiale_di_partenza', keyword=False))
-    # Index.remove_file('2023-11-02')
 
 
