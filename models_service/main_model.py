@@ -54,7 +54,7 @@ class MainModel:
         """)
 
     @classmethod
-    def __augment_prompt(cls, query: str, k: int):
+    def __augment_prompt(cls, query: str, k: int, return_found_docs: bool = False):
         """Takes as input a user query and concatenate it with inherent documents taken from the vectorstore database, based on similarity
 
         :param query: query inserted from the user
@@ -74,6 +74,9 @@ class MainModel:
         </query>
         
         """
+
+        if return_found_docs:
+            return augmented_prompt, source_knowledge
         return augmented_prompt
 
     @classmethod
@@ -92,20 +95,24 @@ class MainModel:
         return source_knowledge
 
     @classmethod
-    def query(cls, user_query : str, return_prompt : bool = False):
+    def query(cls, user_query : str, return_prompt : bool = False, return_found_docs: bool = False):
         """
         Asks the model to generate an answer for the user query.
 
         :param user_query: query inserted by the user
         :param return_prompt: helper parameter. Specifies if the function should return a tuple with the result of the
         query and the augmented prompt, instead of just the former.
+        :param return_found_docs: helper parameter. Specifies if the function should return the retrieved documents from
+        similarity search.
         :return: return the model's response informed by the knowledge base retrieved from the index + user_query
         """
 
         # print('entered in query')
         # print()
+
+        aug_prompt, docs = cls.__augment_prompt(user_query, k=3,return_found_docs=True)
         user_prompt = HumanMessage(
-            content=cls.__augment_prompt(user_query, k=3))
+            content=aug_prompt)
 
         prompt = [cls.__system_prompt, user_prompt]
 
@@ -117,11 +124,17 @@ class MainModel:
         # print()
 
         if return_prompt:
+            if return_found_docs:
+                return res, user_prompt.content, docs
             return res, user_prompt.content
+
+        if return_found_docs:
+            return res, docs
+
         return res
 
     @classmethod
-    def double_step_query(cls, user_query : str, return_prompt : bool = False):
+    def double_step_query(cls, user_query : str, return_prompt : bool = False, return_found_docs: bool = False):
         """
         Asks the model to generate an answer for the user query.
         Feeds the query back in and asks the model to refine it.
@@ -129,10 +142,14 @@ class MainModel:
         :param user_query: query inserted by the user
         :param return_prompt: helper parameter. Specifies if the function should return a tuple with the result of the
         query and the augmented prompt, instead of just the former.
+        :param return_found_docs: helper parameter. Specifies if the function should return the retrieved documents from
+        similarity search.
         :return: return the model's response informed by the knowledge base retrieved from the index, the user_query and a previews answer.
         """
 
         answer,prompt = cls.query(user_query, return_prompt=True)
+
+        new_context = cls.__similarity_search(user_query, k=5)
 
         new_user_prompt = HumanMessage(f"""
         
@@ -150,7 +167,7 @@ class MainModel:
         
         You have the opportunity to improve the answer using the following context:
         <context>
-        {cls.__similarity_search(user_query, k=5)}
+        {new_context}
         </context>
         
         
@@ -164,7 +181,12 @@ class MainModel:
         res = cls.__chat_model.invoke(prompt).content
 
         if return_prompt:
+            if return_found_docs:
+                return res, new_user_prompt.content, new_context
             return res, new_user_prompt.content
+
+        if return_found_docs:
+            return res, new_context
 
         return res
 
